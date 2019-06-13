@@ -1,0 +1,6 @@
+% Surf function wuth int
+
+syms x_
+
+[xx, yy] = meshgrid(-5:0.1:5, -5:0.1:5);
+zz = int(exp(xx + ), x_, 0, 1) - ();
