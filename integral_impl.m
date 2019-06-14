@@ -1,12 +1,14 @@
 function [res] = integral_impl (f, start_, end_)
+%% Different implementations of integral
 
     % res = default_integral(f, start_, end_);
-    res = space_sample_integral(f, start_, end_, 200);
+    res = space_sample_integral(f, start_, end_, 1000);
     
-    %% Implementations
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Implementations start here
     function [res] = default_integral (f, start_, end_)
         
-        % Unknown bug when integral f
+        % Unknown bug when integrate f
         res = integral(f, start_, end_);
     end
 

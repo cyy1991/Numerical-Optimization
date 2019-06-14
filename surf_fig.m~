@@ -1,0 +1,19 @@
+% Surf function wuth int
+
+syms x_
+m = [0.5, 1];
+
+[xx, yy] = meshgrid(-1:0.2:1, -1:0.5:3);
+% zz = int(exp(xx + yy.*x_), x_, 0, 1) - (xx.*m(1) + yy.*m(2));
+% zz = double(zz);
+zz_simp = (exp(xx+yy)-exp(xx))./yy - 0.5.*xx - yy;
+zz(zz > 20) = 20;
+
+surf(xx, yy, zz)
+
+
+hold on
+%scatter3(xhist(1:70, 1), xhist(1:70, 2), fhist(1:70), 'red');
+ for i = 1:6
+    text(xhist(1:i, 1), xhist(1:i, 2), fhist(1:i)+1, num2str(i), 'Color', 'r', 'FontSize', 12);
+ end

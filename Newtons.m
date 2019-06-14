@@ -1,20 +1,76 @@
-function [minf, lam_] = Newtons (m, lam0)
+function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci, maxIt)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %        Example
-% m:     [0.5, 1, 2, 0.7]
-% lam0:  [1, 1, 1, 1]
+% m:     [0.5, 1, 2, 0.7]'
+% lam0:  [1, 1, 1, 2]'
+% preci: terminate condition '|diff of evaluations| < preci'
+% maxIt: max number of iterations
 %
 % minf:  the resultant minimum function value
 % lam_:  the lam values to achieve the minimum value
+% errCode: 0 normal exit; 1 exceeds maxIt
+% itCount: iterations used
+% fhist: history values of f [it * 1]
+% xhist: history choices of x (lambda) [it * n]
 %
 
     n = length(m);
 
     % the integrand part in 'f'
-    f_int = @(x, lam) exp(lam*power(x, 0:n-1)');
+    f_int = @(x, lam) exp(lam'*power(x, 0:n-1)');
     % build the core function
-    f = @(lam) integral_impl(@(x) f_int(x, lam), 0, 1) - lam*m';
+    f = @(lam) integral_impl(@(x) f_int(x, lam), 0, 1) - lam'*m;
+    % the jacobian function
+    g_int = @(i, j, x, lam) x.^(i+j).*exp(lam'*power(x, 0:n-1)');
+    g = @(i, j, lam) integral_impl(@(x) g_int(i, j, x, lam), 0, 1);
+    % partial derivative function
+    p_int = @(i, x, lam) x.^i.*exp(lam'*power(x, 0:n-1)');
+    p = @(i, lam) integral_impl(@(x) p_int(i, x, lam), 0, 1) - m(i+1);
     
-    minf = f(lam0);
-    lam_ = lam0;
+    % Newton's Method
+    it = 1;
+    feval = f(lam0);
+    feval_last = feval + preci * 2;
+    lam = lam0;
+    J = zeros(n, n);
+    y = zeros(n, 1);
+    feval_his = zeros(maxIt, 1);
+    lam_his = zeros(maxIt, n);
+    while it <= maxIt && abs(feval - feval_last) > preci
+    
+        % Calculate Jacobian
+        for i = 0:n-1
+            for j = 0:n-1
+            
+                J(i+1, j+1) = g(i, j, lam);
+            end
+            y(i+1) = -p(i, lam);
+        end
+        % Calculate Inverse/Solve Guassian
+          % J_inv = inverse_impl(J);
+        w = linsolve(J, y);
+          
+        % New lam
+        lam_his(it, :) = lam';
+          % lam = lam - J_inv * lam;
+        lam = lam + w;
+        
+        % re-evaluate
+        feval_last = feval;
+        feval_his(it) = feval;
+        feval = f(lam);
+        
+        it = it + 1;
+    end
+    
+    % Result
+    errCode = 0;
+    if (it > maxIt) 
+        errCode = 1; 
+    end
+    minf = f(lam);
+    lam_ = lam;
+    itCount = it-1;
+    fhist = feval_his(1:it-1);
+    xhist = lam_his(1:it-1, :);
 end

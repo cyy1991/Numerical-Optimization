@@ -6,6 +6,13 @@ $$
 \lambda = \arg\min\left \{ \int_0^1 e^{\lambda_0+\lambda_1x+\lambda_2x^2+\cdots +\lambda_n x^n}dx-(\lambda_0m_0+\lambda_1m_1+\cdots+\lambda_nx_n)\right\}
 $$
 
+
+[minf, lam_, errCode, itCount, fhist, xhist] = Newtons([0.5, 1.0]', [1, 1]', 0.01, 100);
+
+Two evidence supporting the derivative rule
+- Newtons method uses jacobian and works
+- Algebra calculation in bivariable-case matches the partial derivative result
+
 ***
 
 #### Task 2
