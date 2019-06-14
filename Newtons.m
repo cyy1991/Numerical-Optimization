@@ -12,8 +12,8 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
 % itCount: iterations used
 % fhist:   history values of f [it * 1]
 % xhist:   history choices of x (lambda) [it * n]
-%
 
+    %% Initialization
     if size(m, 1) == 1
         m = transpose(m);
     end
@@ -34,7 +34,10 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     p_int = @(i, x, lam) x.^i.*exp(lam'*power(x, 0:n-1)');
     p = @(i, lam) integral_impl(@(x) p_int(i, x, lam), 0, 1) - m(i+1);
     
-    % Newton's Method
+    %% Newton's Method
+    %  y = F(x)
+    %  w = J^{-1} y
+    %  x = x + w
     it = 1;
     feval = f(lam0);
     feval_last = feval + preci * 2;
@@ -75,7 +78,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         it = it + 1;
     end
 
-    % Result
+    %% Result
     errCode = 0;
     if it > maxIt
         errCode = 1; 

@@ -34,6 +34,8 @@ function [record] = timer_ (n)
             scatter(ones(length(tempArray), 1)*i, tempArray, 'filled', 'd');
         end
         plot(1:length(index), avgArray');
+        xlabel('operation index');
+        ylabel('second');
     else
         
         record_ = [record_; n, toc];
