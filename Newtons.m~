@@ -1,0 +1,10 @@
+function [] = Newtons (m, lam0)
+
+    n = length(m);
+
+    % the integrand part in 'f'
+    xArray = @(x) ones(1,n).*x.^(0:n-1);
+    f_int = @(x, lam) exp(lam.*(xArray));
+    % core function
+    f = @ (lam) integral_impl(f_int, 0, 1) - sum(lam.*);
+end
