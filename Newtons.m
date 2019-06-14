@@ -14,6 +14,13 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
 % xhist: history choices of x (lambda) [it * n]
 %
 
+    if size(m, 1) == 1
+        m = transpose(m);
+    end
+    if size(lam0, 1) == 1
+        lam0 = transpose(lam0);
+    end
+
     n = length(m);
 
     % the integrand part in 'f'
@@ -37,7 +44,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     feval_his = zeros(maxIt, 1);
     lam_his = zeros(maxIt, n);
     while it <= maxIt && abs(feval - feval_last) > preci
-    
+
         % Calculate Jacobian
         for i = 0:n-1
             for j = 0:n-1
@@ -62,7 +69,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         
         it = it + 1;
     end
-    
+
     % Result
     errCode = 0;
     if (it > maxIt) 
