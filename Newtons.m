@@ -14,6 +14,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
 % xhist:   history choices of x (lambda) [it * n]
 
     %% Initialization
+    timer_(-1);
     if size(m, 1) == 1
         m = transpose(m);
     end
@@ -40,17 +41,19 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     %  x = x + w
     it = 1;
     feval = f(lam0);
-    feval_last = feval + preci * 2;
+    feval_last = abs(feval) / 2;
+    if abs(feval - feval_last) <= preci
+        feval_last = 100; % in case first eval is small
+    end
     lam = lam0;
     J = zeros(n, n);
     y = zeros(n, 1);
     feval_his = zeros(maxIt, 1);
     lam_his = zeros(maxIt, n);
-    timer_(-1);
-    timer_(0);
     while it <= maxIt && abs(feval - feval_last) > preci
 
         % Calculate Jacobian
+        timer_(0);
         for i = 0:n-1
             for j = 0:n-1
             
@@ -91,4 +94,5 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     itCount = it-1;
     fhist = feval_his(1:it-1);
     xhist = lam_his(1:it-1, :);
+    timer_(-3);
 end
