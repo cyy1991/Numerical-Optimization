@@ -9,7 +9,7 @@ function [res] = integral_impl (f, start_, end_)
     %% Implementations start here
     function [res] = default_integral (f, start_, end_)
         
-        % Unknown bug when integrate f
+        % Unknown bug when integrating f
         res = integral(f, start_, end_);
     end
 

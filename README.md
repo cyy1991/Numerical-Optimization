@@ -7,14 +7,20 @@ $$
 $$
 
 ##### Newton's Method
-'''
+'''  
 [minf, lam_, errCode, itCount, fhist, xhist] = Newtons([0.5, 0.1], [2, 2], 0.0001, 100);  
-trajectory
+trajectory  
 '''
 
 Two evidence supporting the derivative rule
 - Newtons method uses jacobian and works
 - Algebra calculation in bivariable-case matches the partial derivative result
+
+Default 'fminunc'  
+'''  
+options = optimoptions(@fminunc, 'MaxFunctionEvaluations', 5000);
+[x, fval] = fminunc(f, lam0, options)  
+'''
 
 ***
 
