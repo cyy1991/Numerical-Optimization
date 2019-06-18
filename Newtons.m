@@ -34,7 +34,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     % partial derivative function
     p_int = @(i, x, lam) x.^i.*exp(lam'*power(x, 0:n-1)');
     p = @(i, lam) integral_impl(@(x) p_int(i, x, lam), 0, 1) - m(i+1);
-    
+
     %% Newton's Method
     %  y = F(x)
     %  w = J^{-1} y
