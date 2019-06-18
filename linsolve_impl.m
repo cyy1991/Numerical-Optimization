@@ -1,8 +1,15 @@
-function [x] = linsolve_impl (A, b)
+function [x] = linsolve_impl (A, b, choice)
 %% Solve linear system Ax=b
 
-    % x = default_linsolve(A, b);
-    x = guass_scaled_partial(A, b);
+    if (nargin < 3)
+    
+        choice = 2;
+    end
+    if (choice == 1)
+        x = default_linsolve(A, b);
+    else
+        x = guass_scaled_partial(A, b);
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Implementations start here

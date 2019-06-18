@@ -32,15 +32,18 @@ function [record, total] = timer_ (n)
         hold on;
         index = unique(record_(:, 1));
         avgArray = zeros(length(index), 1);
+        sumArray = zeros(length(index), 1);
         maxTime = max(record_(:, 2));
         axis([-0.5 length(index)+0.5 0 maxTime*1.2]);
         for i = 1:length(index)
         
             tempArray = record_(record_(:, 1) == index(i), 2);
             avgArray(i) = mean(tempArray);
+            sumArray(i) = sum(tempArray);
             scatter(ones(length(tempArray), 1)*i, tempArray, 'filled', 'd');
         end
         plot(1:length(index), avgArray');
+        plot(1:length(index), sumArray'./max(sumArray).*maxTime);
         xlabel('operation index');
         ylabel('second');
         % (recorded time) / (total time) percentage

@@ -59,13 +59,14 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
             
                 J(i+1, j+1) = g(i, j, lam);
             end
+            timer_(1);
             y(i+1) = -p(i, lam);
+            timer_(2);
         end
-        timer_(1);
         % Calculate Inverse/Solve Guassian
           % J_inv = inverse_impl(J);
         w = linsolve_impl(J, y);
-        timer_(2);
+        timer_(3);
           
         % New lam
         lam_his(it, :) = lam';
@@ -76,7 +77,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         feval_last = feval;
         feval_his(it) = feval;
         feval = f(lam);
-        timer_(3);
+        timer_(4);
 
         it = it + 1;
     end
