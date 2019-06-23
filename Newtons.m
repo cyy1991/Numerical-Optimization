@@ -43,7 +43,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     feval = f(lam0);
     feval_last = abs(feval) / 2;
     if abs(feval - feval_last) <= preci
-        feval_last = 100; % in case first eval is small
+        feval_last = 100;  % in case first eval is small
     end
     lam = lam0;
     J = zeros(n, n);
@@ -60,7 +60,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
                 J(i+1, j+1) = g(i, j, lam);
             end
             timer_(1);
-            y(i+1) = -p(i, lam);
+            y(i+1) = -p(i, lam);  % minus symbol to enable l = l + w
             timer_(2);
         end
         % Calculate Inverse/Solve Guassian
