@@ -43,7 +43,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     feval = f(lam0);
     feval_last = abs(feval) / 2;
     if abs(feval - feval_last) <= preci
-        feval_last = 100; % in case first eval is small
+        feval_last = 100;  % in case first eval is small
     end
     lam = lam0;
     J = zeros(n, n);
