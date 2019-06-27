@@ -1,4 +1,4 @@
-%m = load('data/m1.txt');
+% m = load('data/m1.txt');
 m = [29.7352; 0.1439; 0.1257; 0.1117; 0.1004];
 
 % the integrand part in 'f'
