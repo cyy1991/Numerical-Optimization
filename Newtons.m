@@ -28,10 +28,10 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     f_int = @(x, lam) exp(lam'*power(x, 0:n-1)');
     % build the core function
     f = @(lam) integral_impl(@(x) f_int(x, lam), 0, 1) - lam'*m;
-    % the jacobian function
+    % the jacobian function (hessian)
     g_int = @(i, j, x, lam) x.^(i+j).*exp(lam'*power(x, 0:n-1)');
     g = @(i, j, lam) integral_impl(@(x) g_int(i, j, x, lam), 0, 1);
-    % partial derivative function
+    % partial derivative function (gradient)
     p_int = @(i, x, lam) x.^i.*exp(lam'*power(x, 0:n-1)');
     p = @(i, lam) integral_impl(@(x) p_int(i, x, lam), 0, 1) - m(i+1);
 
