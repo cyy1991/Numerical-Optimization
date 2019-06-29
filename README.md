@@ -10,7 +10,7 @@ $$
 ```MATLAB
 [a_minf, a_lam_, a_errCode, a_itCount, a_fhist, a_xhist] = Newtons(lam0_true_5, [3, 1, 2, 3, -1], 0.0001, 200);
 
-[minf, lam_, errCode, itCount, fhist, xhist] = Newtons([0.5, 0.1], [2, 2], 0.0001, 100);  
+[a_minf, a_lam_, a_errCode, a_itCount, a_fhist, a_xhist] = Newtons([0.5, 0.1], [2, 2], 0.0001, 100);  
 trajectory  
 ```
 

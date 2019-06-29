@@ -1,5 +1,7 @@
-function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens(m, lam0, preci, maxIt)
+function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens (m, lam0, preci, maxIt)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% [a_minf, a_lam_, a_errCode, a_itCount, a_fhist, a_xhist] = Broydens([0.5, 0.1], [2, 2], 0.0000001, 1000);
+% [a_minf, a_lam_, a_errCode, a_itCount, a_fhist, a_xhist] = Broydens(lam0_true_5, [0, -1, 20, -3, -1], 0.0000001, 3000);
 %
 % lam0: initial value of lambda 
 % preci: precision 
@@ -44,7 +46,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens(m, lam0, preci,
         y_last(i+1) = p(i, lam_last);
     end
     % manually perform one iteration
-    lam = lam_last + 2.*rand(n, 1);
+    lam = lam_last + rand(n, 1);
     feval = f(lam);
     y = zeros(n, 1);  % partial (gradient) eval
     for i = 0:n-1
@@ -61,9 +63,9 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens(m, lam0, preci,
     end
     A_ = g_ + (y - y_last - g_*(lam-lam_last)) * (lam-lam_last)' ./ norm(lam-lam_last)^2;
     A_ = A_^(-1);  % First inverse
-    s = zeros(n, 1);  % s_k = x_k - x_{k-1}
-    y_delta = zeros(n, 1);  % delta y
-    w = zeros(n, 1);  % update gap
+      % s = zeros(n, 1);  % s_k = x_k - x_{k-1}
+      % y_delta = zeros(n, 1);  % delta y
+      % w = zeros(n, 1);  % update gap
     it = 1;
     feval_his = zeros(maxIt, 1);
     lam_his = zeros(maxIt, n);  % x history
@@ -76,13 +78,21 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens(m, lam0, preci,
         y_delta = y - y_last;
         % Using Sherman Morrison, A_ means A inverse
         A_ = A_ + (s-A_*y_delta) * s'*A_ ./ (s'*A_*y_delta);
-        w = A_ * y;
+        w = 0.01 .* A_ * y;
         
         % New lam
         lam_his(it, :) = lam';
+        lam_last = lam;
         lam = lam - w;
         
-        % re-evaluate
+        % re-evaluate y (gradient of f)
+        y_last = y;
+        for i = 0:n-1
+
+            y(i+1) = p(i, lam);
+        end
+        
+        % re-evaluate f
         feval_last = feval;
         feval_his(it) = feval;
         feval = f(lam);
@@ -92,13 +102,9 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens(m, lam0, preci,
     
     %% Result
     errCode = 0;
-    if it > maxIt
-        errCode = 1; 
-    end
+    if it > maxIt, errCode = 1; end
     minf = f(lam);
-    if isnan(minf)
-        errCode = 2;
-    end
+    if isnan(minf), errCode = 2;end
     lam_ = lam;
     itCount = it-1;
     fhist = feval_his(1:it-1);
