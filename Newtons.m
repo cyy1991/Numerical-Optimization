@@ -28,10 +28,10 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     f_int = @(x, lam) exp(lam'*power(x, 0:n-1)');
     % build the core function
     f = @(lam) integral_impl(@(x) f_int(x, lam), 0, 1) - lam'*m;
-    % the jacobian function
+    % the jacobian function (hessian)
     g_int = @(i, j, x, lam) x.^(i+j).*exp(lam'*power(x, 0:n-1)');
     g = @(i, j, lam) integral_impl(@(x) g_int(i, j, x, lam), 0, 1);
-    % partial derivative function
+    % partial derivative function (gradient)
     p_int = @(i, x, lam) x.^i.*exp(lam'*power(x, 0:n-1)');
     p = @(i, lam) integral_impl(@(x) p_int(i, x, lam), 0, 1) - m(i+1);
 
@@ -58,15 +58,22 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
             for j = 0:n-1
             
                 J(i+1, j+1) = g(i, j, lam);
+                J(j+1, i+1) = J(i+1, j+1);
             end
             timer_(1);
             y(i+1) = -p(i, lam);  % minus symbol to enable l = l + w
             timer_(2);
         end
+        
+        % Modified Cholosky to ensure SPD
+        [L, DMC, P] = modified_cholesky(J);
+        J = P'*L*DMC*L'*P;
+        timer_(3);
+        
         % Calculate Inverse/Solve Guassian
           % J_inv = inverse_impl(J);
         w = linsolve_impl(J, y);
-        timer_(3);
+        timer_(4);
           
         % New lam
         lam_his(it, :) = lam';
@@ -77,7 +84,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         feval_last = feval;
         feval_his(it) = feval;
         feval = f(lam);
-        timer_(4);
+        timer_(5);
 
         it = it + 1;
     end
