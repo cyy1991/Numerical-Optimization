@@ -78,7 +78,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Broydens (m, lam0, preci
         y_delta = y - y_last;
         % Using Sherman Morrison, A_ means A inverse
         A_ = A_ + (s-A_*y_delta) * s'*A_ ./ (s'*A_*y_delta);
-        w = 0.01 .* A_ * y;
+        w = 0.001 .* A_ * y;
         
         % New lam
         lam_his(it, :) = lam';
