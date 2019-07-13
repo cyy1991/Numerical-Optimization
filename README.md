@@ -39,5 +39,5 @@ $$
 $$
 
 $$
-\lambda = \argmin_\lambda \Big\{ \int_{x\in \Delta^3} \exp\Big( \sum_{j=0}^d\sum_{i_1}\sum_{i_2}\sum_{i_3} \lambda_{(i_1,i_2,i_3)}x_1^{i_1}x_2^{i_2}x_3^{i_3} \Big) - \sum_{j=0}^d\sum_{i_1}\sum_{i_2}\sum_{i_3} \lambda_{(i_1,i_2,i_3)} m_{(i_1,i_2,i_3)}  \Big\}
+\lambda = \argmin_\lambda \Big\{ \int_{x\in \Delta^3} \exp\Big( \sum_{j=0}^d\sum_{i_1}\sum_{i_2}\sum_{i_3} \lambda_{(i_1,i_2,i_3)}x_1^{i_1}x_2^{i_2}x_3^{i_3} \Big) dx - \sum_{j=0}^d\sum_{i_1}\sum_{i_2}\sum_{i_3} \lambda_{(i_1,i_2,i_3)} m_{(i_1,i_2,i_3)}  \Big\}
 $$

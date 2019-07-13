@@ -55,7 +55,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         % Calculate Jacobian
         timer_(0);
         for i = 0:n-1
-            for j = 0:n-1
+            for j = 0:i
             
                 J(i+1, j+1) = g(i, j, lam);
                 J(j+1, i+1) = J(i+1, j+1);

@@ -5,7 +5,7 @@ m = [0.5, 0.1];
 
 if (a_errCode ~= 0)
     disp("Warning: The algorithm has failed and the result is not credible. Comment me to override.");
-    return;
+    % return;
 end
 
 maxX = max(a_xhist(:, 1));
