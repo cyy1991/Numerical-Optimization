@@ -1,5 +1,5 @@
 function f_int = Gauss_integral3D(i1_i2_i3_lambda)
-% INPUT: [i1, i2, i3, lambda] is a 4-D vector
+% INPUT: [i1, i2, i3, lambda] is a (d x 4) matrix
 % directly implement the integral from 0 to 1, given lambda
 % use five point Gauss in 3D, in total 125 evaluation point
 % reach accuracy of at least 5-6 decimal point
@@ -29,9 +29,9 @@ t = zero_nodes(:,2);
 s = zero_nodes(:,3);
 change_variable_constant = (1-m).*(1-m-(1-m).*t);
 f_val = zeros(125,1);
-[row_n, col_n] = size(m3);
+[row_n, col_n] = size(i1_i2_i3_lambda);
 for i = 1:row_n
-    f_val = f_val + each_term( m, t, s,  m3(i,1), m3(i,2), m3(i,3),m3(i,4) );
+    f_val = f_val + each_term( m, t, s,  i1_i2_i3_lambda(i,1), i1_i2_i3_lambda(i,2), i1_i2_i3_lambda(i,3),i1_i2_i3_lambda(i,4) );
 end
 f_val = exp(f_val) .* change_variable_constant ;
 f_int = weights * f_val  / 8; 
