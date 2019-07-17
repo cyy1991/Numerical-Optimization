@@ -1,6 +1,7 @@
 function f_int = Gauss_integral3D(m3)
 % directly implement the integral from 0 to 1, given lambda
-% use five point Gauss 
+% use five point Gauss in 3D, in total 125 evaluation point
+% reach accuracy of at least 5-6 decimal point
 % example: 
 % Gauss_integral3D([1,2,2,10])
 % Gauss_integral3D([3,3,0,0.01; 2,2,1,0.4;1,3,1,0.006])
