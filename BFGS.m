@@ -16,6 +16,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         lam0 = transpose(lam0);
     end
     errCode = 0;
+    integral_impl(1, -2);
 
     n = length(m);
 
@@ -37,9 +38,11 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
     phid = @(alpha, p, lam) integral_impl(@(x) phid_int(alpha, p, x, lam), 0, 1) - p'*m;
 
     %% Quasi Newton with BFGS's implementation (Sherman optimized)
-    % 
-    %
-    %
+    % s_k = x_k - x_{k-1}
+    % y_k = F(x_k) - F(x_{k-1})
+    %                  sy^T                           ys^T      ss^T     
+    % A_k^{-1} = (I - -------) * A_{k-1}^{-1} * (I - ------) + ------
+    %                  s^Ty                           s^Ty      s^Ts
     %% First iterations and recorder
     timer_(0);
     lam_last = lam0;
@@ -84,20 +87,34 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
     lam_his(1, :) = lam_last;
 
     %% 2nd to maxIt iterations
+    
     % iteration starts
-    while it <= maxIt && abs(feval - feval_last) ~= preci
+    while it <= maxIt %&& abs(feval - feval_last) > preci
 
+        if it == 492
+            fprintf('1');
+        end
+        fprintf('------ iter: %d ------\n', it);
         % Calculate delta x and delta y
         timer_(0);
         s = lam - lam_last;
         y_delta = y - y_last;
+        % fprintf('**** Delta y: %f ****\n',norm(y_delta));
         
         % Using BFGS method to update Jacobian
         % A_ is inverse of Jacobian
         A_ = (eye(n)-s*y_delta'/(s'*y_delta)) * A_ * (eye(n)-y_delta*s'/(s'*y_delta))+s*s'/(s'*y_delta);
+        if nnz(eig(A_) < 0) 
+            fprintf('Not positive definite.\n');
+            
+            A_ = (A_ + A_') ./ 2;
+            [L, DMC, P] = modified_cholesky(A_);
+            A_ = P'*L*DMC*L'*P;
+        end
         timer_(2);
 
         w = -A_ * y;
+        fprintf('**** Current W Norm: %f ****\n',norm(w));
         [alpha, errCode] = LineSearch(@(alpha) phi(alpha, w, lam), @(alpha) phid(alpha, w, lam), it, true);
         if errCode ~= 0, break;end
         w = alpha .* w;
@@ -107,6 +124,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         lam_his(it+1, :) = lam';
         lam_last = lam;
         lam = lam + w;
+        fprintf('**** Delta Lambda Norm: %f ****\n',norm(w));
         timer_(0);
 
         % re-evaluate y (gradient of f)
@@ -116,11 +134,15 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
             y(i+1) = p(i, lam);
         end
         timer_(4);
-        
+
         % re-evaluate f
         feval_last = feval;
         feval_his(it+1) = feval;
         feval = f(lam);
+        %if feval < -280
+        %    integral_impl(1, -1);
+        %end
+
         timer_(5);
         
         it = it + 1;
