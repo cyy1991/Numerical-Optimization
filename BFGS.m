@@ -16,6 +16,8 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         lam0 = transpose(lam0);
     end
     errCode = 0;
+    minf = 0;
+    lam_ = 0;
     ReadData();
     integral_impl(0, 0, 0, 0);
 
@@ -160,7 +162,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
 
     %% Result
     if it > maxIt, errCode = 1; end
-    if ~isempty(minf) && isnan(minf), errCode = 2;end
+    if isnan(minf), errCode = 2;end
     itCount = it - 1;
     fhist = feval_his(1:it);
     xhist = lam_his(1:it, :);
