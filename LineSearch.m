@@ -4,7 +4,7 @@ function [alpha_star, errCode] = LineSearch(phi, phid, it, verbose)
     c1 = 0.0001;
     c2 = 0.9;
 
-    maxIt = 51;
+    maxIt = 101;
     multiplier = 1.1482;
     alpha = zeros(maxIt+1, 1);
     alpha(1) = 0;
@@ -16,11 +16,23 @@ function [alpha_star, errCode] = LineSearch(phi, phid, it, verbose)
     phid_0 = phid(0);
     phi_last = 0;
 
-    if verbose, fprintf('------ iter: %d ------\n', it);end
-    while isnan(phi(alpha(2)))
-    
+    %if verbose, fprintf('------ iter: %d ------\n', it);end
+    temp = phi(alpha(2));
+    while isnan(temp) || (temp > 10e100)
+        
         alpha(2) = alpha(2) / 10;
+        temp = phi(alpha(2));
+        if alpha(2) < 10e-10
+            alpha(2) = 1;
+            break;
+        end
         if verbose, fprintf('{>>}');end
+    end
+    while isnan(temp) || (temp > 10e100)
+        
+        alpha(2) = alpha(2) + 0.05;
+        temp = phi(alpha(2));
+        if verbose, fprintf('{<<}');end
     end
     for i = 2:maxIt
     
@@ -30,7 +42,7 @@ function [alpha_star, errCode] = LineSearch(phi, phid, it, verbose)
         if (phi_a > phi_0 + c1 * alpha(i) * phid_0) || (i > 2 && phi_a >= phi_last)
 
             [alpha_star, errCode] = zoom(phi, phid, alpha(i-1), alpha(i), verbose);
-            if verbose, fprintf('Wolfe Alpha: %8.10f\n', alpha_star); end
+            if verbose, fprintf('Wolfe Alpha: %8.10f, Phi: %f\n', alpha_star,phi(alpha_star)); end
             return;
         end
         % evaluate phid(alpha)
@@ -38,13 +50,13 @@ function [alpha_star, errCode] = LineSearch(phi, phid, it, verbose)
         if abs(phid_a) <= -c2 * phid_0
         
             alpha_star = alpha(i);
-            if verbose, fprintf('Wolfe Alpha: %8.10f\n', alpha_star); end
+            if verbose, fprintf('Wolfe Alpha: %8.10f, Phi: %f\n', alpha_star,phi(alpha_star)); end
             return;
         end
         if phid_a >= 0
         
             [alpha_star, errCode] = zoom(phi, phid, alpha(i), alpha(i-1), verbose);
-            if verbose, fprintf('Wolfe Alpha: %8.10f\n', alpha_star); end
+            if verbose, fprintf('Wolfe Alpha: %8.10f, Phi: %f\n', alpha_star,phi(alpha_star)); end
             return;
         end
         
@@ -55,7 +67,7 @@ function [alpha_star, errCode] = LineSearch(phi, phid, it, verbose)
     
     % Exceeds alpha_max
     alpha_star = -9;
-    if verbose, fprintf('Wolfe Alpha: %8.10f\n', alpha_star); end
+    if verbose, fprintf('Wolfe Alpha: %8.10f, Phi: %f\n', alpha_star,phi(alpha_star)); end
     errCode = -1;
 end
 
@@ -79,7 +91,7 @@ function [alpha_star, errCode] = zoom(phi, phid, alpha_lo, alpha_hi, verbose)
         alpha = alpha_hi - (alpha_hi - alpha_lo) * (phid_hi + d2 - d1) / (phid_hi - phid_lo + 2*d2);
         % print
         if verbose, fprintf('** %f %f -> %f **\n', alpha_hi, alpha_lo, alpha);end
-        % interori check
+        % interior check
         if imag(alpha) ~= 0 || (alpha <= alpha_hi && alpha <= alpha_lo) || (alpha >= alpha_hi && alpha >= alpha_lo)
         
             if phi_lo <= phi_hi
@@ -129,6 +141,6 @@ function [alpha_star, errCode] = zoom(phi, phid, alpha_lo, alpha_hi, verbose)
     end
 
     % Exceed limitation
-    alpha_star = -9;
-    errCode = -2;
+    alpha_star = 0.0001;
+    errCode = 0;
 end
