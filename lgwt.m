@@ -27,7 +27,7 @@ CM  = diag(a,1) + diag(a,-1);
     % - since det(xI-CM)=P_n(x), the abscissas are the roots of the
     %   characteristic polynomial, i.d. the eigenvalues of CM;
     % - the weights can be derived from the corresponding eigenvectors.
-[V L]   = eig(CM);
-[x ind] = sort(diag(L));
+[V, L]   = eig(CM);
+[x, ind] = sort(diag(L));
 V       = V(:,ind)';
 w       = 2 * V(:,1).^2;
