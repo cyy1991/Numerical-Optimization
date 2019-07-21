@@ -16,7 +16,8 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         lam0 = transpose(lam0);
     end
     errCode = 0;
-    integral_impl(1, -2);
+    ReadData();
+    integral_impl(0, 0, 0, 0);
 
     n = length(m);
 
@@ -91,9 +92,6 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
     % iteration starts
     while it <= maxIt %&& abs(feval - feval_last) > preci
 
-        if it == 492
-            fprintf('1');
-        end
         fprintf('------ iter: %d ------\n', it);
         % Calculate delta x and delta y
         timer_(0);
@@ -115,8 +113,8 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
 
         w = -A_ * y;
         fprintf('**** Current W Norm: %f ****\n',norm(w));
-        [alpha, errCode] = LineSearch(@(alpha) phi(alpha, w, lam), @(alpha) phid(alpha, w, lam), it, true);
-        if errCode ~= 0, break;end
+        [alpha, errCode] = LineSearch(@(alpha) phi(alpha, w, lam), @(alpha) phid(alpha, w, lam), w, it, true);
+        if ~(errCode == 0 || errCode == -2), break;end
         w = alpha .* w;
         timer_(3);
         
@@ -127,34 +125,43 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         fprintf('**** Delta Lambda Norm: %f ****\n',norm(w));
         timer_(0);
 
+        % re-evaluate f
+        feval_last = feval;
+        feval_his(it+1) = feval;
+        feval = f(lam);
+        %if feval < 0 && feval_last > 0
+        %    integral_impl(0, 0, 0, 2);
+        %end
+        if it > 10 && feval_last < 0 && feval > 0  % END
+
+            integral_impl(0, 0, 0, 5);
+            it_ = it;
+            minf = f(lam_his(it_, :)');
+            while minf > 0
+                it_ = it_ - 1;
+                minf = f(lam_his(it_, :)');
+            end
+            lam_ = lam_his(it_, :)';
+            break;
+        end
+
+        timer_(4);
+
         % re-evaluate y (gradient of f)
         y_last = y;
         for i = 0:n-1
 
             y(i+1) = p(i, lam);
         end
-        timer_(4);
-
-        % re-evaluate f
-        feval_last = feval;
-        feval_his(it+1) = feval;
-        feval = f(lam);
-        %if feval < -280
-        %    integral_impl(1, -1);
-        %end
-
         timer_(5);
-        
+
         it = it + 1;
-        
     end
-    
+
     %% Result
     if it > maxIt, errCode = 1; end
-    minf = f(lam);
-    if isnan(minf), errCode = 2;end
-    lam_ = lam;
-    itCount = it-1;
+    if ~isempty(minf) && isnan(minf), errCode = 2;end
+    itCount = it - 1;
     fhist = feval_his(1:it);
     xhist = lam_his(1:it, :);
     timer_(-3);
