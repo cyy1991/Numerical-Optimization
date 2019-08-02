@@ -18,7 +18,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS_3D (lam0, preci, ma
         lam0 = transpose(lam0);
     end
     errCode = 0;
-    integral_impl(1, -2);
+    %integral_impl(1, -2);
 
     n = length(lam0);
 
@@ -35,11 +35,11 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS_3D (lam0, preci, ma
     %% First iterations and recorder
     timer_(0);
     lam_last = lam0;
-    feval_last = Gauss_integral3D(lam_last, 'f');
-    y_last = Gauss_integral3D(lam_last, 'g');  % last partial (gradient) eval
+    feval_last = Gauss_integral3D(lam_last, 'f', 0);
+    y_last = Gauss_integral3D(lam_last, 'g', 0);  % last partial (gradient) eval
     
     % Other initialization
-    A_ = Gauss_integral3D(lam_last, 'h');
+    A_ = Gauss_integral3D(lam_last, 'h', 0);
     
     % Modified Cholosky to ensure SPD
     [L, DMC, P] = modified_cholesky(A_);
@@ -49,8 +49,8 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS_3D (lam0, preci, ma
     w = A_ * y_last;
     lam = lam_last - w ./ norm(w);
     
-    feval = Gauss_integral3D(lam, 'f');
-    y = Gauss_integral3D(lam, 'g');  % partial (gradient) eval
+    feval = Gauss_integral3D(lam, 'f', 0);
+    y = Gauss_integral3D(lam, 'g', 0);  % partial (gradient) eval
 
     % Recorder and initialization
         % s = zeros(n, 1);  % s_k = x_k - x_{k-1}
@@ -105,13 +105,13 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS_3D (lam0, preci, ma
 
         % re-evaluate y (gradient of f)
         y_last = y;
-        y = Gauss_integral3D(lam, 'g');
+        y = Gauss_integral3D(lam, 'g', it);
         timer_(4);
 
         % re-evaluate f
         feval_last = feval;
         feval_his(it+1) = feval;
-        feval = Gauss_integral3D(lam, 'f');
+        feval = Gauss_integral3D(lam, 'f', it);
         %if feval < -280
         %    integral_impl(1, -1);
         %end
