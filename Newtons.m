@@ -21,6 +21,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
     if size(lam0, 1) == 1
         lam0 = transpose(lam0);
     end
+    integral_impl(0, 0, 0, 0);
 
     n = length(m);
 
@@ -87,6 +88,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = Newtons (m, lam0, preci,
         timer_(5);
 
         it = it + 1;
+        fprintf('%f\n', feval);
     end
 
     %% Result

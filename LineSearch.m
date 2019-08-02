@@ -142,7 +142,7 @@ function [alpha_star, errCode] = zoom(phi, phid, w, alpha_lo, alpha_hi, verbose)
     end
 
     % Exceed limitation
-    alpha_star = 1000 / norm(w);
+    alpha_star = 0;
     fprintf('[ Warning: LineSearch stage II exceeds limitation. ]\n');
     errCode = -2;
 end

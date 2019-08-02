@@ -14,8 +14,8 @@ marX = 0.1*(maxX - minX);
 maxY = max(a_xhist(:, 2));
 minY = min(a_xhist(:, 2));
 marY = 0.1*(maxY - minY);
-[xx, yy] = meshgrid(minX-marX:(maxX-minX)/101:maxX+marX,...
-                    minY-marY:(maxY-minY)/101:maxY+marY);
+[xx, yy] = meshgrid(minX-marX:(maxX-minX)/21:maxX+marX,...
+                    minY-marY:(maxY-minY)/21:maxY+marY);
 % zz = int(exp(xx + yy.*x_), x_, 0, 1) - (xx.*m(1) + yy.*m(2));
 % zz = double(zz);
 f = @(x, y) (exp(x+y)-exp(x))./y - m(1).*x - m(2).*y;
