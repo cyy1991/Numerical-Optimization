@@ -134,7 +134,7 @@ function [minf, lam_, errCode, itCount, fhist, xhist] = BFGS (m, lam0, preci, ma
         %if feval < 0 && feval_last > 0
         %    integral_impl(0, 0, 0, 2);
         %end
-        if it > 10 && feval_last < 0 && feval > 0  % END
+        if (errCode ~= 0) || (it > 10 && feval_last < 0 && feval > 0)  % END
 
             integral_impl(0, 0, 0, 5);
             it_ = it;
